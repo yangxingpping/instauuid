@@ -44,9 +44,21 @@ NAN_METHOD(Generate) {
     info.GetReturnValue().Set(buffer.ToLocalChecked());
 }
 
+NAN_METHOD(UnGenerate) {
+    UINT64 euid = info.Length() > 1 \
+        ? generate((WORD) info[0]->Uint32Value(), (WORD) info[1]->Uint32Value()) \
+        : generate((WORD) info[0]->Uint32Value());
+
+    // pass it to buffer
+    auto buffer = CopyBuffer((char*)(&euid), 8);
+    info.GetReturnValue().Set(buffer.ToLocalChecked());
+}
+
 NAN_MODULE_INIT(Init) {
     Set(target, New<String>("generate").ToLocalChecked(),
         GetFunction(New<FunctionTemplate>(Generate)).ToLocalChecked());
+    Set(target, New<String>("ungenerate").ToLocalChecked(),
+        GetFunction(New<FunctionTemplate>(UnGenerate)).ToLocalChecked());
 }
 
 NODE_MODULE(generator, Init);
